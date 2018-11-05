@@ -4,15 +4,13 @@ import java.net.*;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-public class SocketNetwork extends Thread {
+public class SocketNetwork {
 	
 	private InetAddress mailHost;
     private InetAddress localhost;
     private BufferedReader in;
 	private PrintWriter out;
 	private SSLSocket smtpPipe;
-	private InputStream inn;
-	private OutputStream outt;
 	
 	private String host;
 	private String data;
@@ -20,7 +18,6 @@ public class SocketNetwork extends Thread {
 	private String to;
     
 	public SocketNetwork(String data, String from, String to) throws Exception {
-		mailHost = InetAddress.getByName(host);
 	    localhost = InetAddress.getLocalHost();
 	    
 	    String[] temp = from.split("@");
@@ -32,19 +29,17 @@ public class SocketNetwork extends Thread {
 	    this.to = to;
 	}
 	
-	public void run() {
+	public boolean send() {
 	      try {
 			smtpPipe =(SSLSocket) ((SSLSocketFactory) SSLSocketFactory.getDefault())
 	                .createSocket(InetAddress.getByName("smtp." + host), Constants.SMTP_PORT);
 			if (smtpPipe == null) {
+				return false;
 		      }
-		      inn = smtpPipe.getInputStream();
-		      outt = smtpPipe.getOutputStream();
-		      in = new BufferedReader(new InputStreamReader(inn));
-		      out = new PrintWriter(new OutputStreamWriter(outt), true);
-		      if (inn == null || outt == null) {
-		        System.out.println("Failed to open streams to socket.");
-		      }
+
+		      in = new BufferedReader(new InputStreamReader(smtpPipe.getInputStream()));
+		      out = new PrintWriter(smtpPipe.getOutputStream(), true);
+		      
 		      String initialID = in.readLine();
 		      System.out.println(initialID);
 		      
@@ -68,11 +63,14 @@ public class SocketNetwork extends Thread {
 		      System.out.println(acceptedOK);
 		      
 		      out.println("QUIT");
+		      
+		      return true;
+		      
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	      return true;
 	      
-	      
-	    }
+	}
 }
