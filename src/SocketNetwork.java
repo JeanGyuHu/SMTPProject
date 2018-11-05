@@ -16,11 +16,12 @@ public class SocketNetwork {
 	private String data;
 	private String from;
 	private String to;
+    private String[] temp;
     
 	public SocketNetwork(String data, String from, String to) throws Exception {
 	    localhost = InetAddress.getLocalHost();
 	    
-	    String[] temp = from.split("@");
+	    temp = from.split("@");
 	    if(temp.length==2)
 	    	host = temp[1];
 	    
