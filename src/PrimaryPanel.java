@@ -71,7 +71,7 @@ public class PrimaryPanel extends JPanel{
 			
 			if(obj == btnConfirm) {
 				try {
-					smtp = new SocketNetwork(taData.getText(), txtFromId.getText(), txtToId.getText());
+					smtp = new SocketNetwork(taData.getText(), txtFromId.getText(), txtToId.getText(),password.getText());
 					smtp.send();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

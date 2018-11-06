@@ -53,7 +53,7 @@ public class SocketNetwork {
 	public boolean send() {
 	      try {
 			smtpPipe =(SSLSocket) ((SSLSocketFactory) SSLSocketFactory.getDefault())
-	                .createSocket(InetAddress.getByName("smtp." + host), Constants.SMTP_PORT);
+	                .createSocket(InetAddress.getByName("smtp." + host), Constants.SMTP_CONNECT);
 			if (smtpPipe == null) {
 				return false;
 		      }
@@ -61,6 +61,7 @@ public class SocketNetwork {
 		      in = new BufferedReader(new InputStreamReader(smtpPipe.getInputStream()));
 		      out = new PrintWriter(smtpPipe.getOutputStream(), true);
 		      
+		      System.out.println("1");
 		      if(sendCommand("EHLO ", "smtp." + host, Constants.SMTP_EHLO)==false)
 		    	  return false;
 		      
@@ -68,22 +69,39 @@ public class SocketNetwork {
 		      password = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
 		      
 		      out.println("AUTH LOGIN");
-		      
-		      if(!in.readLine().substring(0, 3).equals(Constants.SMTP_LOGIN))
-		    	  return false;
+		      while(!in.readLine().substring(0, 3).equals(Constants.SMTP_LOGIN)) {
+		      }
+		      System.out.println("2");
 		      
 		      out.println(id);
+		      System.out.println(in.readLine());
 		      out.println(password);
+		      System.out.println(in.readLine());
 		      
 		      if(sendCommand("MAIL FROM: ", "<" + from + ">", Constants.SMTP_FROM)==false)
 		    	  return false;
+		      
+		      System.out.println("2");
+		      
 		      if(sendCommand("RCPT TO: ", "<" + to + ">" , Constants.SMTP_TO)==false)
 		    	  return false;
+		      
+		      System.out.println("3");
+		      
 		      if(sendCommand("DATA", "", Constants.SMTP_DATA)==false)
 		    	  return false;
 
+		      out.println("From: "+from+" <" + from + ">");
+		      out.println("To: " + to + " <" + to + ">");
+		      out.println("Subject: HI!\r\n");
+		      out.println("Content: " + data);
+	            
+		      System.out.println("4");
+		      
 		      if(sendCommand(".", "", Constants.SMTP_QUIT)==false)
 		    	  return false;
+		      
+		      System.out.println("5");
 		      
 		      out.println("QUIT");
 		      in.close();
