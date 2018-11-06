@@ -15,6 +15,7 @@ public class SocketNetwork {
 	private SSLSocket smtpPipe;
 	
 	private String host;
+	private String subject;
 	private String data;
 	private String from;
 	private String to;
@@ -22,7 +23,7 @@ public class SocketNetwork {
 	private String password;
     private String[] temp;
     
-	public SocketNetwork(String data, String from, String to,String password) throws Exception {
+	public SocketNetwork(String data, String from, String to,String password,String subject) throws Exception {
 	    localhost = InetAddress.getLocalHost();
 	    
 	    temp = from.split("@");
@@ -33,6 +34,7 @@ public class SocketNetwork {
 	    this.from = from;
 	    this.to = to;
 	    this.password = password;
+	    this.subject = subject;
 	}
 	
     protected boolean sendCommand(String command, String param, String responseCode) throws IOException {
@@ -93,8 +95,8 @@ public class SocketNetwork {
 
 		      out.println("From: "+from+" <" + from + ">");
 		      out.println("To: " + to + " <" + to + ">");
-		      out.println("Subject: HI!\r\n");
-		      out.println("Content: " + data);
+		      out.println("Subject: "+subject+"\r\n");
+		      out.println(data);
 	            
 		      System.out.println("4");
 		      

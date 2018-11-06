@@ -15,7 +15,9 @@ public class PrimaryPanel extends JPanel{
 	private JButton btnConfirm;
 	private JTextArea taData;
 	private JScrollPane scrollPane;
-	
+	private JLabel lblSubject;
+	private JLabel lblContents;
+	private JTextField txtSubject;
 	private ButtonListener bL;
 	
 	
@@ -45,12 +47,21 @@ public class PrimaryPanel extends JPanel{
 		txtToId.setBounds(50,55,250,30);
 		
 		btnConfirm = new JButton("Send!");
-		btnConfirm.setBounds(350,55,80,30);
+		btnConfirm.setBounds(350,100,80,30);
 		btnConfirm.addActionListener(bL);
 		taData = new JTextArea();
 		
+		lblSubject = new JLabel("Subject :");
+		lblSubject.setBounds(0,90,80,30);
+		
+		txtSubject = new JTextField(10);
+		txtSubject.setBounds(50,90,250,30);
+		
+		lblContents = new JLabel("Contents :");
+		lblContents.setBounds(0,120,80,30);
+		
 		scrollPane = new JScrollPane(taData);
-		scrollPane.setBounds(10,90,580,300);
+		scrollPane.setBounds(10,145,580,245);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVisible(true);
@@ -62,6 +73,9 @@ public class PrimaryPanel extends JPanel{
 		add(txtFromId);
 		add(txtToId);
 		add(btnConfirm);
+		add(lblSubject);
+		add(txtSubject);
+		add(lblContents);
 		add(scrollPane);
 	}
 	
@@ -71,8 +85,11 @@ public class PrimaryPanel extends JPanel{
 			
 			if(obj == btnConfirm) {
 				try {
-					smtp = new SocketNetwork(taData.getText(), txtFromId.getText(), txtToId.getText(),password.getText());
-					smtp.send();
+					smtp = new SocketNetwork(taData.getText(), txtFromId.getText(), txtToId.getText(),password.getText(),txtSubject.getText());
+					if(smtp.send())
+						JOptionPane.showMessageDialog(scrollPane, "성공적으로 전송하였습니다!");
+					else
+						JOptionPane.showMessageDialog(scrollPane, "전송에 실패하였습니다 T^T");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
