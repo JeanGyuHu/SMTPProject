@@ -67,6 +67,13 @@ public class SocketNetwork {
 		      id = Base64.getEncoder().encodeToString(temp[0].getBytes(StandardCharsets.UTF_8));
 		      password = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
 		      
+		      out.println("AUTH LOGIN");
+		      
+		      if(!in.readLine().substring(0, 3).equals(Constants.SMTP_LOGIN))
+		    	  return false;
+		      
+		      out.println(id);
+		      out.println(password);
 		      
 		      if(sendCommand("MAIL FROM: ", "<" + from + ">", Constants.SMTP_FROM)==false)
 		    	  return false;
