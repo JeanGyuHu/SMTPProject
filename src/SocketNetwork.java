@@ -3,8 +3,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 
 public class SocketNetwork {
 	
@@ -20,6 +19,8 @@ public class SocketNetwork {
 	private String id;
 	private String password;
     private String[] temp;
+    
+    private String response;
     
 	public SocketNetwork(String data, String from, String to,String password,String subject) throws Exception {
 	    
@@ -67,13 +68,27 @@ public class SocketNetwork {
 		      password = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
 		      
 		      out.println("AUTH LOGIN");
-		      while(!in.readLine().substring(0, 3).equals(Constants.SMTP_LOGIN)) {
+		      
+		      while(!((response=in.readLine().substring(0, 3)).equals(Constants.SMTP_LOGIN))) {
 		      }
+		      System.out.println(response);
+		      
+		      if(!response.equals(Constants.SMTP_LOGIN))
+		    	  return false;
 		      
 		      out.println(id);
-		      System.out.println(in.readLine());
+		      response= in.readLine();
+		      
+		      System.out.println(response);
+		      if(!response.substring(0, 3).equals(Constants.SMTP_LOGIN))
+		    	  return false;
+		      
 		      out.println(password);
-		      System.out.println(in.readLine());
+		      response= in.readLine();
+		      System.out.println(response);
+		      
+		      if(!response.substring(0, 3).equals(Constants.SMTP_LOGINSUCCESS))
+		    	  return false;
 		      
 		      if(sendMessage("MAIL FROM: <" + from + ">", Constants.SMTP_FROM)==false)
 		    	  return false;
