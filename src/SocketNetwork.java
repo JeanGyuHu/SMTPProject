@@ -8,11 +8,9 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class SocketNetwork {
 	
-	private InetAddress mailHost;
-    private InetAddress localhost;
     private BufferedReader in;
 	private PrintWriter out;
-	private SSLSocket smtpPipe;
+	private SSLSocket socket;
 	
 	private String host;
 	private String subject;
@@ -24,7 +22,6 @@ public class SocketNetwork {
     private String[] temp;
     
 	public SocketNetwork(String data, String from, String to,String password,String subject) throws Exception {
-	    localhost = InetAddress.getLocalHost();
 	    
 	    temp = from.split("@");
 	    if(temp.length==2)
@@ -37,10 +34,10 @@ public class SocketNetwork {
 	    this.subject = subject;
 	}
 	
-    protected boolean sendCommand(String command, String param, String responseCode) throws IOException {
+    protected boolean sendMessage(String command, String responseCode) throws IOException {
         String response = "", code;
        
-        out.println(command + param);
+        out.println(command);
         response = in.readLine();
         
         System.out.println(response);
@@ -54,17 +51,16 @@ public class SocketNetwork {
     
 	public boolean send() {
 	      try {
-			smtpPipe =(SSLSocket) ((SSLSocketFactory) SSLSocketFactory.getDefault())
+			socket =(SSLSocket) ((SSLSocketFactory) SSLSocketFactory.getDefault())
 	                .createSocket(InetAddress.getByName("smtp." + host), Constants.SMTP_CONNECT);
-			if (smtpPipe == null) {
+			if (socket == null) {
 				return false;
 		      }
 
-		      in = new BufferedReader(new InputStreamReader(smtpPipe.getInputStream()));
-		      out = new PrintWriter(smtpPipe.getOutputStream(), true);
+		      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		      out = new PrintWriter(socket.getOutputStream(), true);
 		      
-		      System.out.println("1");
-		      if(sendCommand("EHLO ", "smtp." + host, Constants.SMTP_EHLO)==false)
+		      if(sendMessage("EHLO smtp." + host, Constants.SMTP_EHLO)==false)
 		    	  return false;
 		      
 		      id = Base64.getEncoder().encodeToString(temp[0].getBytes(StandardCharsets.UTF_8));
@@ -73,49 +69,38 @@ public class SocketNetwork {
 		      out.println("AUTH LOGIN");
 		      while(!in.readLine().substring(0, 3).equals(Constants.SMTP_LOGIN)) {
 		      }
-		      System.out.println("2");
 		      
 		      out.println(id);
 		      System.out.println(in.readLine());
 		      out.println(password);
 		      System.out.println(in.readLine());
 		      
-		      if(sendCommand("MAIL FROM: ", "<" + from + ">", Constants.SMTP_FROM)==false)
+		      if(sendMessage("MAIL FROM: <" + from + ">", Constants.SMTP_FROM)==false)
 		    	  return false;
 		      
-		      System.out.println("2");
-		      
-		      if(sendCommand("RCPT TO: ", "<" + to + ">" , Constants.SMTP_TO)==false)
+		      if(sendMessage("RCPT TO: <" + to + ">" , Constants.SMTP_TO)==false)
 		    	  return false;
 		      
-		      System.out.println("3");
-		      
-		      if(sendCommand("DATA", "", Constants.SMTP_DATA)==false)
+		      if(sendMessage("DATA", Constants.SMTP_DATA)==false)
 		    	  return false;
 
 		      out.println("From: "+from+" <" + from + ">");
 		      out.println("To: " + to + " <" + to + ">");
 		      out.println("Subject: "+subject+"\r\n");
 		      out.println(data);
-	            
-		      System.out.println("4");
 		      
-		      if(sendCommand(".", "", Constants.SMTP_QUIT)==false)
+		      if(sendMessage(".", Constants.SMTP_QUIT)==false)
 		    	  return false;
-		      
-		      System.out.println("5");
 		      
 		      out.println("QUIT");
 		      in.close();
 		      out.close();
-		      smtpPipe.close();
+		      socket.close();
 		      
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	      
 	      return true;
-	      
 	}
 }

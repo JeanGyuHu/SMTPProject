@@ -14,5 +14,4 @@ public class Start {
 		frame.setVisible(true);
 		frame.pack();
 	}
-
 }
