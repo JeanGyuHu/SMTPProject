@@ -90,13 +90,13 @@ public class SocketNetwork {
 		      if(!response.substring(0, 3).equals(Constants.SMTP_LOGINSUCCESS))
 		    	  return false;
 		      
-		      if(sendMessage("MAIL FROM: <" + from + ">", Constants.SMTP_FROM)==false)
+		      if(!sendMessage("MAIL FROM: <" + from + ">", Constants.SMTP_FROM))
 		    	  return false;
 		      
-		      if(sendMessage("RCPT TO: <" + to + ">" , Constants.SMTP_TO)==false)
+		      if(!sendMessage("RCPT TO: <" + to + ">" , Constants.SMTP_TO))
 		    	  return false;
 		      
-		      if(sendMessage("DATA", Constants.SMTP_DATA)==false)
+		      if(!sendMessage("DATA", Constants.SMTP_DATA))
 		    	  return false;
 
 		      out.println("From: "+from+" <" + from + ">");
@@ -104,7 +104,7 @@ public class SocketNetwork {
 		      out.println("Subject: "+subject+"\r\n");
 		      out.println(data);
 		      
-		      if(sendMessage(".", Constants.SMTP_QUIT)==false)
+		      if(!sendMessage(".", Constants.SMTP_QUIT))
 		    	  return false;
 		      
 		      out.println("QUIT");
